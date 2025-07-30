@@ -73,11 +73,13 @@ flutter pub run build_runner build --delete-conflicting-outputs
 Jalankan Aplikasi
 flutter run
 ## Struktur Proyek
+...
 lib
 ├── models # Berisi model data (todo.dart)
 ├── screens # Berisi semua file UI aplikasi
 ├── services # Berisi logika bisnis (hive, notifikasi, tema)
 └── main.dart # Titik masuk aplikasi dan konfigurasi global
+...
 
 ## Tim Pengembang
 Proyek ini dikembangkan secara kolaboratif oleh:
