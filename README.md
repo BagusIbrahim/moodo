@@ -56,10 +56,8 @@ Untuk menjalankan proyek ini secara lokal, ikuti langkah-langkah berikut:
 
 
 Prasyarat
-```
 Pastikan Anda telah menginstal Flutter SDK.
 Siapkan emulator (Android/iOS) atau hubungkan perangkat fisik.
-```
 
 
 Clone Repositori
