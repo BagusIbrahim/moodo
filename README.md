@@ -54,32 +54,48 @@ timezone - Diperlukan oleh flutter_local_notifications untuk menangani penjadwal
 ## Petunjuk Instalasi
 Untuk menjalankan proyek ini secara lokal, ikuti langkah-langkah berikut:
 
+
 Prasyarat
+'''
 Pastikan Anda telah menginstal Flutter SDK.
 Siapkan emulator (Android/iOS) atau hubungkan perangkat fisik.
+'''
+
 
 Clone Repositori
+'''
 git clone https://github.com/BagusIbrahim/moodo.git
+'''
+
+'''
 cd moodo
+'''
+
 
 Instal Dependensi
+'''
 flutter pub get
+'''
 
 Jalankan Build Runner
 Perintah ini diperlukan untuk menghasilkan file adapter untuk Hive.
 
+'''
 flutter pub run build_runner build --delete-conflicting-outputs
+'''
 
 Jalankan Aplikasi
+'''
 flutter run
+'''
 ## Struktur Proyek
-...
+'''
 lib
 ├── models # Berisi model data (todo.dart)
 ├── screens # Berisi semua file UI aplikasi
 ├── services # Berisi logika bisnis (hive, notifikasi, tema)
 └── main.dart # Titik masuk aplikasi dan konfigurasi global
-...
+'''
 
 ## Tim Pengembang
 Proyek ini dikembangkan secara kolaboratif oleh:
