@@ -1,4 +1,4 @@
-import 'dart:math'; // <-- PERBAIKAN 1: Menggunakan titik dua (:)
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -6,6 +6,7 @@ import 'package:table_calendar/table_calendar.dart';
 
 import '../models/todo.dart';
 import '../services/hive_service.dart';
+import '../services/pdf_service.dart'; // <-- Import service PDF
 import '../services/theme_service.dart';
 
 class MoodScreen extends StatefulWidget {
@@ -101,6 +102,29 @@ class _MoodScreenState extends State<MoodScreen> {
     }
     setState(() {});
   }
+  
+  void _generateReport() async {
+    // Tampilkan dialog loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      // Panggil metode statis secara langsung dari kelasnya
+      await PdfService.generateMonthlyReport(_allTodos, _focusedDay);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal membuat laporan: $e')),
+      );
+    } finally {
+      // Guard the use of context with a mounted check
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,6 +149,13 @@ class _MoodScreenState extends State<MoodScreen> {
         ),
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.picture_as_pdf_rounded),
+            tooltip: 'Cetak Laporan Bulan Ini',
+            onPressed: _generateReport,
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -153,7 +184,7 @@ class _MoodScreenState extends State<MoodScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withAlpha(25), // Perbaikan dari withOpacity(0.1)
             offset: const Offset(0, 5),
             blurRadius: 15,
           ),
@@ -211,7 +242,7 @@ class _MoodScreenState extends State<MoodScreen> {
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withAlpha(20), // Perbaikan dari withOpacity(0.08)
             offset: const Offset(0, 4),
             blurRadius: 10,
           ),
@@ -223,6 +254,11 @@ class _MoodScreenState extends State<MoodScreen> {
         focusedDay: _focusedDay,
         selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
         onDaySelected: _onDaySelected,
+        onPageChanged: (focusedDay) {
+          setState(() {
+            _focusedDay = focusedDay;
+          });
+        },
         calendarFormat: CalendarFormat.month,
         headerStyle: HeaderStyle(
           formatButtonVisible: false,
@@ -231,7 +267,7 @@ class _MoodScreenState extends State<MoodScreen> {
         ),
         calendarStyle: CalendarStyle(
           todayDecoration: BoxDecoration(
-            color: _primaryColor.withOpacity(0.5),
+            color: _primaryColor.withAlpha(128), // Perbaikan dari withOpacity(0.5)
             shape: BoxShape.circle,
           ),
           selectedDecoration: BoxDecoration(
@@ -244,7 +280,6 @@ class _MoodScreenState extends State<MoodScreen> {
     );
   }
 
-  // PERBAIKAN 2: Menambahkan fungsi yang hilang
   bool isSameDay(DateTime a, DateTime b) {
     return a.year == b.year && a.month == b.month && a.day == b.day;
   }
@@ -259,7 +294,7 @@ class MoodChartPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     Paint backgroundPaint = Paint()
-      ..color = moodColor.withOpacity(0.15)
+      ..color = moodColor.withAlpha(38) // Perbaikan dari withOpacity(0.15)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 12;
 

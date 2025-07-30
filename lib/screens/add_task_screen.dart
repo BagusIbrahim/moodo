@@ -1,10 +1,14 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart'; // Import Provider
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 import '../models/todo.dart';
 import '../services/hive_service.dart';
-import '../services/theme_service.dart'; // Import ThemeService
+import '../services/theme_service.dart';
 
 class AddTaskScreen extends StatefulWidget {
   final Todo? todo;
@@ -15,7 +19,6 @@ class AddTaskScreen extends StatefulWidget {
 }
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
-  // ... (semua state dan fungsi logika awal tetap sama)
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _detailsController = TextEditingController();
@@ -28,6 +31,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   final HiveService _hiveService = HiveService();
   bool get isEditing => widget.todo != null;
 
+  File? _imageFile;
+  final ImagePicker _picker = ImagePicker();
+
   @override
   void initState() {
     super.initState();
@@ -39,6 +45,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       _selectedPriority = todo.priority;
       _selectedDate = todo.createdAt;
       _selectedTime = TimeOfDay.fromDateTime(todo.createdAt);
+      if (todo.imagePath != null) {
+        _imageFile = File(todo.imagePath!);
+      }
     }
   }
 
@@ -47,6 +56,16 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     _titleController.dispose();
     _detailsController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickImage() async {
+    final XFile? selectedImage = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (selectedImage != null) {
+      setState(() {
+        _imageFile = File(selectedImage.path);
+      });
+    }
   }
 
   Future<void> _pickDate() async {
@@ -67,7 +86,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     if (time != null) setState(() => _selectedTime = time);
   }
 
-  void _saveTask() {
+  void _saveTask() async {
     if (_formKey.currentState!.validate()) {
       if (_selectedDate == null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -75,10 +94,23 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         );
         return;
       }
+
+      String? finalImagePath;
+      if (_imageFile != null) {
+        final appDir = await getApplicationDocumentsDirectory();
+        final fileName = path.basename(_imageFile!.path);
+        final savedImage = await _imageFile!.copy('${appDir.path}/$fileName');
+        finalImagePath = savedImage.path;
+      }
+
       final finalDateTime = DateTime(
-        _selectedDate!.year, _selectedDate!.month, _selectedDate!.day,
-        _selectedTime?.hour ?? 0, _selectedTime?.minute ?? 0,
+        _selectedDate!.year,
+        _selectedDate!.month,
+        _selectedDate!.day,
+        _selectedTime?.hour ?? 0,
+        _selectedTime?.minute ?? 0,
       );
+
       if (isEditing) {
         final updatedTodo = widget.todo!;
         updatedTodo.title = _titleController.text;
@@ -86,12 +118,16 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         updatedTodo.category = _selectedCategory;
         updatedTodo.priority = _selectedPriority;
         updatedTodo.createdAt = finalDateTime;
+        updatedTodo.imagePath = finalImagePath ?? updatedTodo.imagePath;
         _hiveService.updateTodo(updatedTodo.key, updatedTodo).then((_) => Navigator.pop(context, true));
       } else {
         final newTask = Todo(
-          title: _titleController.text, details: _detailsController.text,
-          category: _selectedCategory, priority: _selectedPriority,
+          title: _titleController.text,
+          details: _detailsController.text,
+          category: _selectedCategory,
+          priority: _selectedPriority,
           createdAt: finalDateTime,
+          imagePath: finalImagePath,
         );
         _hiveService.addTodo(newTask).then((_) => Navigator.pop(context, true));
       }
@@ -100,13 +136,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // ## 1. DETEKSI TEMA ##
     final themeService = Provider.of<ThemeService>(context);
     final isDarkMode = themeService.isDarkMode;
 
     const primaryColor = Color(0xFF5C6BC0);
     const lightPrimaryColor = Color(0xFF8E99F3);
-    
+
     return Scaffold(
       backgroundColor: isDarkMode ? const Color(0xFF1C1C2E) : const Color(0xFFF8F8FF),
       appBar: AppBar(
@@ -142,7 +177,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 label: 'Nama Tugas',
                 hint: 'Contoh: Selesaikan desain UI',
                 icon: Icons.title_rounded,
-                isDarkMode: isDarkMode, // Kirim status tema
+                isDarkMode: isDarkMode,
                 validator: (value) => (value == null || value.isEmpty) ? 'Nama tugas tidak boleh kosong' : null,
               ),
               const SizedBox(height: 24),
@@ -151,21 +186,21 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 label: 'Detail Tugas',
                 hint: 'Contoh: Gunakan warna biru indigo',
                 icon: Icons.notes_rounded,
-                isDarkMode: isDarkMode, // Kirim status tema
+                isDarkMode: isDarkMode,
               ),
               const SizedBox(height: 24),
               _buildDateTimePicker(
                 label: _selectedDate == null ? 'Pilih Tanggal' : DateFormat('EEEE, d MMMM yyyy').format(_selectedDate!),
                 onTap: _pickDate,
                 icon: Icons.calendar_today_rounded,
-                isDarkMode: isDarkMode, // Kirim status tema
+                isDarkMode: isDarkMode,
               ),
               const SizedBox(height: 24),
               _buildDateTimePicker(
                 label: _selectedTime == null ? 'Pilih Waktu' : _selectedTime!.format(context),
                 onTap: _pickTime,
                 icon: Icons.access_time_filled_rounded,
-                isDarkMode: isDarkMode, // Kirim status tema
+                isDarkMode: isDarkMode,
               ),
               const SizedBox(height: 24),
               _buildDropdown(
@@ -175,7 +210,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 items: _categoryOptions,
                 onChanged: (value) => setState(() => _selectedCategory = value),
                 icon: Icons.category_rounded,
-                isDarkMode: isDarkMode, // Kirim status tema
+                isDarkMode: isDarkMode,
                 validator: (value) => value == null ? 'Kategori harus dipilih' : null,
               ),
               const SizedBox(height: 24),
@@ -186,8 +221,43 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 items: _priorityOptions,
                 onChanged: (value) => setState(() => _selectedPriority = value),
                 icon: Icons.flag_rounded,
-                isDarkMode: isDarkMode, // Kirim status tema
+                isDarkMode: isDarkMode,
                 validator: (value) => value == null ? 'Prioritas harus dipilih' : null,
+              ),
+              const SizedBox(height: 24),
+              Text(
+                "Dokumentasi Foto",
+                style: GoogleFonts.nunito(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: isDarkMode ? Colors.white70 : Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 12),
+              GestureDetector(
+                onTap: _pickImage,
+                child: Container(
+                  height: 150,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: isDarkMode ? Colors.grey.shade800 : Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.shade300, width: 1),
+                  ),
+                  child: _imageFile != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.file(_imageFile!, fit: BoxFit.cover),
+                        )
+                      : const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.add_a_photo_outlined, color: Colors.grey, size: 40),
+                            SizedBox(height: 8),
+                            Text("Ketuk untuk menambah gambar", style: TextStyle(color: Colors.grey)),
+                          ],
+                        ),
+                ),
               ),
               const SizedBox(height: 40),
               SizedBox(
@@ -213,7 +283,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     );
   }
 
-  // Helper widget diperbarui untuk menerima status tema
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
@@ -222,9 +291,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     required bool isDarkMode,
     String? Function(String?)? validator,
   }) {
-    // ## 2. WARNA KONDISIONAL ##
     final fillColor = isDarkMode ? Colors.grey.shade800 : Colors.grey.shade100;
-    
+
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(

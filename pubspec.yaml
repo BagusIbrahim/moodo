@@ -17,6 +17,12 @@ dependencies:
   shared_preferences: ^2.2.3
   url_launcher: ^6.3.1
   google_fonts: ^6.1.0
+  image_picker: ^1.0.7 # Untuk memilih gambar dari galeri atau kamera
+  path_provider: ^2.1.3 # Untuk mendapatkan direktori penyimpanan di perangkat
+  path: ^1.9.0  
+  pdf: ^3.10.8
+  printing: ^5.14.0
+  open_file: ^3.3.2
 
 dev_dependencies:
   flutter_test:
@@ -27,3 +33,15 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/logo.png
+    - assets/fonts/Nunito-Regular.ttf
+    - assets/fonts/Nunito-Bold.ttf
+
+  # Font juga perlu dideklarasikan di bagian fonts
+  fonts:
+    - family: Nunito
+      fonts:
+        - asset: assets/fonts/Nunito-Regular.ttf
+        - asset: assets/fonts/Nunito-Bold.ttf
+          weight: 700

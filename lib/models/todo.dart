@@ -22,6 +22,9 @@ class Todo extends HiveObject {
   @HiveField(5) // Field baru
   String? priority;
 
+  @HiveField(6)
+  String? imagePath; // Untuk menyimpan path gambar
+
   Todo({
     required this.title,
     this.isCompleted = false,
@@ -29,5 +32,6 @@ class Todo extends HiveObject {
     this.details,
     this.category,
     this.priority,
+    this.imagePath,
   });
 }
