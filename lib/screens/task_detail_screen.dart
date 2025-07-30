@@ -1,16 +1,14 @@
-// lib/screens/task_detail_screen.dart
-
-import 'dart:io'; // Untuk menampilkan File gambar
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart'; // Untuk ThemeService
+import 'package:provider/provider.dart';
 import '../models/todo.dart';
 import '../services/theme_service.dart';
-// import '../services/pdf_service.dart'; // Akan diimpor nanti jika kita tambahkan fitur PDF
+// import '../services/pdf_service.dart';
 
 class TaskDetailScreen extends StatelessWidget {
-  final Todo todo; // Layar ini membutuhkan objek Todo untuk ditampilkan
+  final Todo todo;
 
   const TaskDetailScreen({super.key, required this.todo});
 
@@ -19,16 +17,14 @@ class TaskDetailScreen extends StatelessWidget {
     final themeService = Provider.of<ThemeService>(context);
     final isDarkMode = themeService.isDarkMode;
 
-    final Color primaryColor = isDarkMode
-        ? const Color(0xFF2D3250)
-        : const Color(0xFF5C6BC0);
+    final Color primaryColor =
+        isDarkMode ? const Color(0xFF2D3250) : const Color(0xFF5C6BC0);
     final Color textColor = isDarkMode ? Colors.white70 : Colors.black87;
     final Color subTextColor = isDarkMode ? Colors.grey : Colors.grey.shade600;
 
     return Scaffold(
-      backgroundColor: isDarkMode
-          ? const Color(0xFF1C1C2E)
-          : const Color(0xFFF8F8FF),
+      backgroundColor:
+          isDarkMode ? const Color(0xFF1C1C2E) : const Color(0xFFF8F8FF),
       appBar: AppBar(
         title: Text(
           todo.title,
@@ -37,8 +33,7 @@ class TaskDetailScreen extends StatelessWidget {
             color: Colors.white,
           ),
         ),
-        backgroundColor:
-            primaryColor, // Menggunakan warna utama AppBar dari tema
+        backgroundColor: primaryColor,
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -46,7 +41,7 @@ class TaskDetailScreen extends StatelessWidget {
                 isDarkMode ? const Color(0xFF2D3250) : primaryColor,
                 isDarkMode
                     ? const Color(0xFF474E68)
-                    : const Color(0xFF8E99F3), // Light primary color
+                    : const Color(0xFF8E99F3),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -56,15 +51,7 @@ class TaskDetailScreen extends StatelessWidget {
         elevation: 10,
         shadowColor: Colors.black.withOpacity(0.3),
         iconTheme: const IconThemeData(color: Colors.white),
-        // Aksi di AppBar (misal: tombol edit atau share PDF nanti)
         actions: [
-          // TODO: Nanti bisa tambahkan IconButton untuk edit atau export PDF
-          // IconButton(
-          //   icon: Icon(Icons.picture_as_pdf_rounded, color: Colors.white),
-          //   onPressed: () {
-          //     // Logika untuk generate PDF
-          //   },
-          // ),
         ],
       ),
       body: SingleChildScrollView(
@@ -72,17 +59,6 @@ class TaskDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Judul Tugas (jika belum di AppBar)
-            // Text(
-            //   todo.title,
-            //   style: GoogleFonts.nunito(
-            //     fontSize: 28,
-            //     fontWeight: FontWeight.w800,
-            //     color: textColor,
-            //   ),
-            // ),
-            // const SizedBox(height: 16),
-
             // Status Selesai
             Row(
               children: [
@@ -123,9 +99,8 @@ class TaskDetailScreen extends StatelessWidget {
             _buildDetailRow(
               icon: Icons.calendar_today_rounded,
               label: 'Waktu Dijadwalkan',
-              value: DateFormat(
-                'EEEE, d MMMM yyyy HH:mm',
-              ).format(todo.createdAt),
+              value: DateFormat('EEEE, d MMMM yyyy HH:mm', 'id_ID')
+                  .format(todo.createdAt),
               isDarkMode: isDarkMode,
             ),
             const SizedBox(height: 16),
@@ -149,36 +124,6 @@ class TaskDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Frekuensi Pengulangan (Jika ada)
-            if (todo.repeatFrequency != null &&
-                todo.repeatFrequency != 'Tidak Berulang')
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildDetailRow(
-                    icon: Icons.repeat_rounded,
-                    label: 'Berulang',
-                    value: todo.repeatFrequency!,
-                    isDarkMode: isDarkMode,
-                  ),
-                  if (todo.repeatEndDate != null)
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 36.0,
-                        top: 4.0,
-                      ), // Agar sejajar
-                      child: Text(
-                        'Sampai: ${DateFormat('d MMMM yyyy').format(todo.repeatEndDate!)}',
-                        style: GoogleFonts.nunito(
-                          fontSize: 14,
-                          color: subTextColor,
-                        ),
-                      ),
-                    ),
-                  const SizedBox(height: 16),
-                ],
-              ),
-
             // Gambar (Jika ada)
             if (todo.imagePath != null && File(todo.imagePath!).existsSync())
               Column(
@@ -199,7 +144,7 @@ class TaskDetailScreen extends StatelessWidget {
                       File(todo.imagePath!),
                       fit: BoxFit.cover,
                       width: double.infinity,
-                      height: 200, // Tinggi tetap untuk gambar
+                      height: 200,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
                           height: 200,
@@ -269,7 +214,7 @@ class TaskDetailScreen extends StatelessWidget {
     );
   }
 
-  // Helper untuk mendapatkan warna prioritas (duplikasi dari HomeScreen)
+  // Helper untuk mendapatkan warna prioritas
   Color _getPriorityColor(String? priority) {
     switch (priority) {
       case 'Tinggi':

@@ -1,10 +1,8 @@
-// lib/services/notification_service.dart
-
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart'
-    as tzdata; // Import ini untuk inisialisasi zona waktu
-import 'dart:math'; // Import ini untuk menghasilkan ID notifikasi acak
+    as tzdata;
+import 'dart:math';
 
 class NotificationService {
   final FlutterLocalNotificationsPlugin notificationsPlugin =
@@ -12,8 +10,6 @@ class NotificationService {
 
   // Constructor
   NotificationService() {
-    // Inisialisasi data zona waktu. Penting untuk menjadwalkan notifikasi dengan benar.
-    // Ini dipanggil di main.dart juga, tapi di sini aman untuk memastikan
     tzdata.initializeTimeZones();
   }
 
@@ -30,7 +26,7 @@ class NotificationService {
       'Mencoba menjadwalkan notifikasi: $title pada $scheduledDate (ID: $id)',
     );
 
-    // Pastikan scheduledDate ada di masa depan. Notifikasi tidak bisa dijadwalkan di masa lalu.
+    // Memastikan scheduledDate ada di masa depan. Notifikasi tidak bisa dijadwalkan di masa lalu.
     if (scheduledDate.isBefore(DateTime.now())) {
       print(
         'Tanggal notifikasi sudah lewat. Notifikasi tidak dijadwalkan. ($scheduledDate)',
@@ -38,8 +34,7 @@ class NotificationService {
       return;
     }
 
-    // Ubah DateTime biasa menjadi TZDateTime (timezone-aware DateTime)
-    // Ini penting agar notifikasi muncul sesuai zona waktu lokal pengguna.
+    // Mengubah DateTime biasa menjadi TZDateTime (timezone-aware DateTime)
     final tz.TZDateTime scheduledTime = tz.TZDateTime.from(
       scheduledDate,
       tz.local, // Menggunakan zona waktu lokal perangkat
@@ -48,7 +43,7 @@ class NotificationService {
     // Detail Notifikasi untuk Android
     const AndroidNotificationDetails
     androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'moodo_task_channel', // ID unik untuk channel notifikasi. Bisa ganti jika mau.
+      'moodo_task_channel', // ID unik untuk channel notifikasi.
       'Pengingat Tugas Moodo', // Nama channel yang akan terlihat di pengaturan notifikasi Android
       channelDescription:
           'Channel ini digunakan untuk pengingat tugas yang Anda buat.', // Deskripsi channel

@@ -45,4 +45,6 @@ class ThemeService with ChangeNotifier {
     }
     notifyListeners();
   }
+
+  Future<void> loadTheme() async {}
 }

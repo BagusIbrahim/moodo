@@ -4,13 +4,12 @@ import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-// Import yang tidak terkait notifikasi (ini adalah komentar yang kamu berikan)
 import 'add_task_screen.dart';
 import '../models/todo.dart';
 import '../services/hive_service.dart';
 import '../services/theme_service.dart';
 import 'mood_screen.dart';
-import 'task_detail_screen.dart'; // <<-- PASTIKAN BARIS INI ADA
+import 'task_detail_screen.dart';
 
 enum SortMethod { byTime, byPriority }
 
@@ -23,35 +22,30 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final HiveService _hiveService = HiveService();
-  List<Todo> _allTodos = []; // Daftar semua tugas yang dimuat dari Hive
-  List<Todo> _filteredTodos =
-      []; // Daftar tugas yang ditampilkan (sudah difilter)
+  List<Todo> _allTodos = [];
+  List<Todo> _filteredTodos = [];
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
   CalendarFormat _calendarFormat = CalendarFormat.week;
   SortMethod _currentSortMethod = SortMethod.byTime;
-  final TextEditingController _searchController =
-      TextEditingController(); // <<-- Controller untuk search bar
+  final TextEditingController _searchController = TextEditingController();
 
-  final Color _primaryColor = const Color(0xFF5C6BC0); // Indigo
+  final Color _primaryColor = const Color(0xFF5C6BC0);
   final Color _lightPrimaryColor = const Color(0xFF8E99F3);
-  final Color _accentColor = const Color(0xFFFFB74D); // Oranye lembut
+  final Color _accentColor = const Color(0xFFFFB74D);
 
   @override
   void initState() {
     super.initState();
     _loadTodos();
-    // Tidak ada permintaan izin notifikasi di sini, fokus ke search bar saja
   }
 
   @override
   void dispose() {
-    _searchController
-        .dispose(); // Buang controller saat widget tidak lagi digunakan
+    _searchController.dispose();
     super.dispose();
   }
 
-  // Fungsi _getPriorityValue tetap sama
   int _getPriorityValue(String? priority) {
     switch (priority) {
       case 'Tinggi':
@@ -66,55 +60,47 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadTodos() async {
-    _allTodos = await _hiveService.getTodos(); // Muat semua tugas
-    _filterTasksBySearchAndDate(); // Panggil fungsi filter baru di sini
+    _allTodos = await _hiveService.getTodos();
+    _filterTasksBySearchAndDate();
   }
 
-  // <<-- FUNGSI FILTER UNTUK PENCARIAN GLOBAL DAN FILTER TANGGAL -->>
   void _filterTasksBySearchAndDate() {
-    String query = _searchController.text.toLowerCase(); // Ambil teks pencarian
+    String query = _searchController.text.toLowerCase();
 
     List<Todo> tempTodos;
 
     if (query.isNotEmpty) {
-      // Jika ada query, filter _allTodos (SEMUA tugas) berdasarkan query
       tempTodos = _allTodos.where((task) {
         return task.title.toLowerCase().contains(query) ||
             (task.details?.toLowerCase().contains(query) ?? false);
       }).toList();
     } else {
-      // Jika query kosong, baru filter berdasarkan tanggal yang dipilih
       tempTodos = _allTodos.where((task) {
         return isSameDay(task.createdAt, _selectedDay);
       }).toList();
     }
 
-    // Terapkan pengurutan
     if (_currentSortMethod == SortMethod.byTime) {
       tempTodos.sort((a, b) => a.createdAt.compareTo(b.createdAt));
     } else {
       tempTodos.sort((a, b) {
-        int priorityCompare = _getPriorityValue(
-          a.priority,
-        ).compareTo(_getPriorityValue(b.priority));
+        int priorityCompare =
+            _getPriorityValue(a.priority).compareTo(_getPriorityValue(b.priority));
         if (priorityCompare == 0) {
           return a.createdAt.compareTo(b.createdAt);
         }
         return priorityCompare;
       });
     }
-    setState(
-      () => _filteredTodos = tempTodos,
-    ); // Perbarui daftar yang ditampilkan
+    setState(() => _filteredTodos = tempTodos);
   }
-  // <<-- AKHIR FUNGSI FILTER -->>
 
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
     setState(() {
       _selectedDay = selectedDay;
       _focusedDay = focusedDay;
     });
-    _filterTasksBySearchAndDate(); // Panggil fungsi filter yang diperbarui
+    _filterTasksBySearchAndDate();
   }
 
   Future<void> _showDatePicker() async {
@@ -122,14 +108,14 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       initialDate: _selectedDay,
       firstDate: DateTime(2000),
-      lastDate: DateTime(2101), // Sesuaikan dengan kebutuhanmu
+      lastDate: DateTime(2101),
     );
     if (pickedDate != null) {
       setState(() {
         _selectedDay = pickedDate;
         _focusedDay = pickedDate;
       });
-      _filterTasksBySearchAndDate(); // Panggil fungsi filter yang diperbarui
+      _filterTasksBySearchAndDate();
     }
   }
 
@@ -140,9 +126,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _deleteTask(Todo todo) {
     _hiveService.deleteTodo(todo.key).then((_) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('"${todo.title}" telah dihapus.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('"${todo.title}" telah dihapus.')),
+      );
       _loadTodos();
     });
   }
@@ -154,9 +140,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       drawer: _buildDrawer(themeService),
-      backgroundColor: isDarkMode
-          ? const Color(0xFF1C1C2E)
-          : const Color(0xFFF8F8FF),
+      backgroundColor:
+          isDarkMode ? const Color(0xFF1C1C2E) : const Color(0xFFF8F8FF),
       body: Stack(
         children: [
           Column(
@@ -202,16 +187,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         setState(() {
                           _currentSortMethod =
                               _currentSortMethod == SortMethod.byTime
-                              ? SortMethod.byPriority
-                              : SortMethod.byTime;
-                          _filterTasksBySearchAndDate(); // Panggil fungsi filter yang diperbarui
+                                  ? SortMethod.byPriority
+                                  : SortMethod.byTime;
+                          _filterTasksBySearchAndDate();
                         });
                       },
                     ),
                   ],
                 ),
               ),
-              // <<-- WIDGET SEARCH BAR -->>
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20.0,
@@ -220,7 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: TextField(
                   controller: _searchController,
                   onChanged: (value) {
-                    _filterTasksBySearchAndDate(); // Panggil fungsi filter saat teks berubah
+                    _filterTasksBySearchAndDate();
                   },
                   style: GoogleFonts.nunito(
                     color: isDarkMode ? Colors.white : Colors.black87,
@@ -248,7 +232,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             onPressed: () {
                               _searchController.clear();
-                              _filterTasksBySearchAndDate(); // Kosongkan pencarian dan filter ulang
+                              _filterTasksBySearchAndDate();
                             },
                           )
                         : null,
@@ -267,10 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ), // Memberi sedikit spasi setelah search bar
-              // <<-- AKHIR WIDGET SEARCH BAR -->>
+              const SizedBox(height: 10),
               Expanded(
                 child: _filteredTodos.isEmpty
                     ? Center(
@@ -303,9 +284,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                             child: ListTile(
-                              // <<-- PERUBAHAN: onTap untuk membuka TaskDetailScreen -->>
                               onTap: () async {
-                                // Logika untuk membuka TaskDetailScreen dan kemudian refresh daftar
                                 await Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -313,9 +292,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         TaskDetailScreen(todo: todo),
                                   ),
                                 );
-                                // Setelah kembali dari TaskDetailScreen, refresh daftar.
-                                // Ini akan memuat ulang semua task (termasuk yang digenerate dari repeat task)
-                                // dan kemudian memfilter berdasarkan tanggal saat ini (karena search bar sudah bersih)
+                                // Setelah kembali, refresh daftar tugas
                                 _loadTodos();
                               },
                               contentPadding: EdgeInsets.zero,
@@ -332,18 +309,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                 style: GoogleFonts.nunito(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 17,
-                                  color: isDarkMode
-                                      ? Colors.white
-                                      : Colors.black,
+                                  color:
+                                      isDarkMode ? Colors.white : Colors.black,
                                   decoration: todo.isCompleted
                                       ? TextDecoration.lineThrough
                                       : TextDecoration.none,
                                 ),
                               ),
                               subtitle: Text(
-                                // Menampilkan kategori dan waktu, juga frekuensi pengulangan jika ada
-                                "${todo.category ?? 'Lainnya'} • ${DateFormat('HH:mm').format(todo.createdAt)}"
-                                "${(todo.repeatFrequency != null && todo.repeatFrequency != 'Tidak Berulang') ? ' • ${todo.repeatFrequency}' : ''}", // <<-- TAMBAHAN: Tampilkan frekuensi pengulangan
+                                "${todo.category ?? 'Lainnya'} • ${DateFormat('HH:mm').format(todo.createdAt)}",
                                 style: GoogleFonts.nunito(color: Colors.grey),
                               ),
                               trailing: Row(
@@ -355,7 +329,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       color: Colors.grey.shade500,
                                     ),
                                     onPressed: () async {
-                                      final result = await Navigator.push<bool>(
+                                      final result =
+                                          await Navigator.push<bool>(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
@@ -524,7 +499,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       child: Column(
         children: [
-          // LOGO APLIKASI
           Text(
             'Moodo',
             style: GoogleFonts.pacifico(
@@ -534,7 +508,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 10),
-          // Kalender
           TableCalendar(
             firstDay: DateTime.utc(2000, 1, 1),
             lastDay: DateTime.utc(2040, 12, 31),
@@ -586,7 +559,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Row(
                           children: [
                             Text(
-                              DateFormat.yMMMM().format(date),
+                              DateFormat.yMMMM('id_ID').format(date),
                               style: GoogleFonts.nunito(
                                 color: Colors.white,
                                 fontSize: 20,

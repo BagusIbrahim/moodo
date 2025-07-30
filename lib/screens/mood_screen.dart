@@ -6,7 +6,7 @@ import 'package:table_calendar/table_calendar.dart';
 
 import '../models/todo.dart';
 import '../services/hive_service.dart';
-import '../services/pdf_service.dart'; // <-- Import service PDF
+import '../services/pdf_service.dart';
 import '../services/theme_service.dart';
 
 class MoodScreen extends StatefulWidget {
@@ -119,7 +119,6 @@ class _MoodScreenState extends State<MoodScreen> {
         SnackBar(content: Text('Gagal membuat laporan: $e')),
       );
     } finally {
-      // Guard the use of context with a mounted check
       if (mounted) {
         Navigator.of(context).pop();
       }
@@ -184,7 +183,7 @@ class _MoodScreenState extends State<MoodScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(25), // Perbaikan dari withOpacity(0.1)
+            color: Colors.black.withAlpha(25),
             offset: const Offset(0, 5),
             blurRadius: 15,
           ),
@@ -242,7 +241,7 @@ class _MoodScreenState extends State<MoodScreen> {
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(20), // Perbaikan dari withOpacity(0.08)
+            color: Colors.black.withAlpha(20),
             offset: const Offset(0, 4),
             blurRadius: 10,
           ),
@@ -267,7 +266,7 @@ class _MoodScreenState extends State<MoodScreen> {
         ),
         calendarStyle: CalendarStyle(
           todayDecoration: BoxDecoration(
-            color: _primaryColor.withAlpha(128), // Perbaikan dari withOpacity(0.5)
+            color: _primaryColor.withAlpha(128),
             shape: BoxShape.circle,
           ),
           selectedDecoration: BoxDecoration(
@@ -294,7 +293,7 @@ class MoodChartPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     Paint backgroundPaint = Paint()
-      ..color = moodColor.withAlpha(38) // Perbaikan dari withOpacity(0.15)
+      ..color = moodColor.withAlpha(38)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 12;
 

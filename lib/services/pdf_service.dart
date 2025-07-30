@@ -4,15 +4,15 @@ import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw; // <-- INI BAGIAN YANG DIPERBAIKI
+import 'package:pdf/widgets.dart' as pw;
 import '../models/todo.dart';
 
-// Jadikan class ini sebagai kumpulan metode statis (tidak perlu di-instantiate)
+
 class PdfService {
   static Future<void> generateMonthlyReport(List<Todo> allTodos, DateTime month) async {
     final pdf = pw.Document();
 
-    // 1. Filter dan Proses Data
+    //Filter dan Proses Data
     final monthlyTasks = allTodos.where((task) {
       return task.createdAt.year == month.year && task.createdAt.month == month.month;
     }).toList();
@@ -30,7 +30,7 @@ class PdfService {
       (await rootBundle.load('assets/logo.png')).buffer.asUint8List(),
     );
 
-    // 2. Bangun Halaman PDF
+    // Bangun Halaman PDF
     pdf.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
@@ -44,7 +44,7 @@ class PdfService {
       ),
     );
 
-    // 3. Simpan dan Buka File
+    // Simpan dan Buka File
     await _saveAndLaunchFile(pdf, 'Laporan_Moodo_${DateFormat('MMMM_yyyy').format(month)}.pdf');
   }
 

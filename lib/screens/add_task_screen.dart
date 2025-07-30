@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 import '../models/todo.dart';
 import '../services/hive_service.dart';
 import '../services/theme_service.dart';
-import '../services/notification_service.dart'; // Import NotificationService
+import '../services/notification_service.dart';
 
 class AddTaskScreen extends StatefulWidget {
   final Todo? todo;
@@ -36,24 +36,11 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   TimeOfDay? _selectedTime;
   final HiveService _hiveService = HiveService();
   final NotificationService _notificationService =
-      NotificationService(); // Instance NotificationService
+      NotificationService();
   bool get isEditing => widget.todo != null;
 
   File? _imageFile;
   final ImagePicker _picker = ImagePicker();
-
-  // <<-- TAMBAHAN: Variabel state untuk Tugas Berulang -->>
-  String?
-  _selectedRepeatFrequency; // 'Tidak Berulang', 'Harian', 'Mingguan', 'Bulanan'
-  DateTime? _selectedRepeatEndDate; // Tanggal berakhir pengulangan (opsional)
-
-  final List<String> _repeatFrequencyOptions = [
-    'Tidak Berulang',
-    'Harian',
-    'Mingguan',
-    'Bulanan',
-  ];
-  // <<-- AKHIR TAMBAHAN
 
   @override
   void initState() {
@@ -69,12 +56,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       if (todo.imagePath != null) {
         _imageFile = File(todo.imagePath!);
       }
-      // <<-- TAMBAHAN: Isi data pengulangan jika sedang mengedit tugas -->>
-      _selectedRepeatFrequency = todo.repeatFrequency;
-      _selectedRepeatEndDate = todo.repeatEndDate;
-    } else {
-      // Default untuk tugas baru: Tidak Berulang
-      _selectedRepeatFrequency = 'Tidak Berulang';
     }
   }
 
@@ -157,15 +138,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         updatedTodo.createdAt = finalDateTime;
         updatedTodo.imagePath = finalImagePath ?? updatedTodo.imagePath;
 
-        // <<-- TAMBAHAN: Simpan data pengulangan saat update -->>
-        updatedTodo.repeatFrequency = _selectedRepeatFrequency;
-        updatedTodo.repeatEndDate = _selectedRepeatEndDate;
-        // <<-- AKHIR TAMBAHAN
-
         // Jadwalkan notifikasi baru
         final int notificationId =
-            updatedTodo.notificationId ??
-            _notificationService.generateUniqueId();
+            updatedTodo.notificationId ?? _notificationService.generateUniqueId();
         updatedTodo.notificationId = notificationId;
         final DateTime scheduledForNotification = finalDateTime.subtract(
           const Duration(seconds: 1),
@@ -198,10 +173,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           priority: _selectedPriority,
           createdAt: finalDateTime,
           imagePath: finalImagePath,
-          // <<-- TAMBAHAN: Simpan data pengulangan untuk tugas baru -->>
-          repeatFrequency: _selectedRepeatFrequency,
-          repeatEndDate: _selectedRepeatEndDate,
-          // <<-- AKHIR TAMBAHAN
         );
 
         // Jadwalkan notifikasi untuk tugas baru
@@ -217,7 +188,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             title: 'Pengingat Tugas: ${newTask.title}',
             body: newTask.details ?? 'Waktunya menyelesaikan tugasmu!',
             scheduledDate: scheduledForNotification,
-            payload: null,
+            payload: null, 
           );
         } else {
           print('Tugas berada di masa lalu, notifikasi tidak dijadwalkan.');
@@ -238,9 +209,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     const lightPrimaryColor = Color(0xFF8E99F3);
 
     return Scaffold(
-      backgroundColor: isDarkMode
-          ? const Color(0xFF1C1C2E)
-          : const Color(0xFFF8F8FF),
+      backgroundColor: isDarkMode ? const Color(0xFF1C1C2E) : const Color(0xFFF8F8FF),
       appBar: AppBar(
         title: Text(
           isEditing ? 'Edit Tugas' : 'Tugas Baru',
@@ -278,9 +247,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 hint: 'Contoh: Selesaikan desain UI',
                 icon: Icons.title_rounded,
                 isDarkMode: isDarkMode,
-                validator: (value) => (value == null || value.isEmpty)
-                    ? 'Nama tugas tidak boleh kosong'
-                    : null,
+                validator: (value) =>
+                    (value == null || value.isEmpty) ? 'Nama tugas tidak boleh kosong' : null,
               ),
               const SizedBox(height: 24),
               _buildTextField(
@@ -301,9 +269,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               ),
               const SizedBox(height: 24),
               _buildDateTimePicker(
-                label: _selectedTime == null
-                    ? 'Pilih Waktu'
-                    : _selectedTime!.format(context),
+                label: _selectedTime == null ? 'Pilih Waktu' : _selectedTime!.format(context),
                 onTap: _pickTime,
                 icon: Icons.access_time_filled_rounded,
                 isDarkMode: isDarkMode,
@@ -317,8 +283,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 onChanged: (value) => setState(() => _selectedCategory = value),
                 icon: Icons.category_rounded,
                 isDarkMode: isDarkMode,
-                validator: (value) =>
-                    value == null ? 'Kategori harus dipilih' : null,
+                validator: (value) => value == null ? 'Kategori harus dipilih' : null,
               ),
               const SizedBox(height: 24),
               _buildDropdown(
@@ -329,65 +294,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 onChanged: (value) => setState(() => _selectedPriority = value),
                 icon: Icons.flag_rounded,
                 isDarkMode: isDarkMode,
-                validator: (value) =>
-                    value == null ? 'Prioritas harus dipilih' : null,
+                validator: (value) => value == null ? 'Prioritas harus dipilih' : null,
               ),
               const SizedBox(height: 24),
-
-              // <<-- TAMBAHAN: Opsi Pengulangan Tugas -->>
-              _buildDropdown(
-                label: 'Frekuensi Pengulangan',
-                value: _selectedRepeatFrequency,
-                hint: 'Pilih Frekuensi',
-                items: _repeatFrequencyOptions,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedRepeatFrequency = value;
-                    // Reset tanggal berakhir jika tidak berulang
-                    if (value == 'Tidak Berulang') {
-                      _selectedRepeatEndDate = null;
-                    }
-                  });
-                },
-                icon: Icons.repeat_rounded,
-                isDarkMode: isDarkMode,
-              ),
-              // Tampilkan opsi tanggal berakhir hanya jika tugas berulang
-              if (_selectedRepeatFrequency != 'Tidak Berulang')
-                Column(
-                  children: [
-                    const SizedBox(height: 24),
-                    _buildDateTimePicker(
-                      label: _selectedRepeatEndDate == null
-                          ? 'Berulang Sampai Tanggal (Opsional)'
-                          : DateFormat(
-                              'EEEE, d MMMM yyyy',
-                            ).format(_selectedRepeatEndDate!),
-                      onTap: () async {
-                        DateTime? date = await showDatePicker(
-                          context: context,
-                          initialDate:
-                              _selectedRepeatEndDate ??
-                              _selectedDate ??
-                              DateTime.now(),
-                          firstDate:
-                              _selectedDate ??
-                              DateTime.now(), // Pastikan tidak sebelum tanggal tugas dimulai
-                          lastDate: DateTime(2101),
-                        );
-                        if (date != null)
-                          setState(() => _selectedRepeatEndDate = date);
-                      },
-                      icon: Icons.date_range_rounded,
-                      isDarkMode: isDarkMode,
-                    ),
-                  ],
-                ),
-
-              // <<-- AKHIR TAMBAHAN Opsi Pengulangan Tugas -->>
-              const SizedBox(
-                height: 24,
-              ), // Tambahkan jarak jika tidak ada foto (jika ada, sesuaikan)
               Text(
                 "Dokumentasi Foto",
                 style: GoogleFonts.nunito(
@@ -403,9 +312,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   height: 150,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: isDarkMode
-                        ? Colors.grey.shade800
-                        : Colors.grey.shade100,
+                    color: isDarkMode ? Colors.grey.shade800 : Colors.grey.shade100,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.grey.shade300, width: 1),
                   ),

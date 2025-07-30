@@ -1,10 +1,8 @@
-// lib/models/todo.dart
-
 import 'package:hive/hive.dart';
 
 part 'todo.g.dart';
 
-@HiveType(typeId: 1) // Pastikan typeId ini unik di antara semua model Hive
+@HiveType(typeId: 1)
 class Todo extends HiveObject {
   @HiveField(0)
   String title;
@@ -25,16 +23,11 @@ class Todo extends HiveObject {
   String? priority;
 
   @HiveField(6)
-  String? imagePath; // Untuk menyimpan path gambar (sudah ada di kodemu)
+  String? imagePath;
 
-  @HiveField(7) // <<-- Field untuk ID Notifikasi
+  @HiveField(7)
   int? notificationId;
 
-  @HiveField(8) // <<-- Field untuk frekuensi pengulangan
-  String? repeatFrequency; // Contoh: 'None', 'Daily', 'Weekly', 'Monthly'
-
-  @HiveField(9) // <<-- Field untuk tanggal akhir pengulangan (opsional)
-  DateTime? repeatEndDate;
 
   Todo({
     required this.title,
@@ -45,7 +38,5 @@ class Todo extends HiveObject {
     this.priority,
     this.imagePath,
     this.notificationId,
-    this.repeatFrequency,
-    this.repeatEndDate,
   });
 }
