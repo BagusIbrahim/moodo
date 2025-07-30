@@ -1,7 +1,7 @@
-Moodo
+# Moodo
 Aplikasi to-do list modern yang dirancang untuk membantu Anda mengelola tugas harian dengan antarmuka yang bersih, intuitif, dan fungsional.
 
-Fitur Utama
+## Fitur Utama
 ✅ Manajemen Tugas (CRUD) - Tambah, lihat, edit, dan hapus tugas dengan mudah.
 
 📅 Kalender Interaktif - Navigasi dan filter tugas berdasarkan tanggal dengan tampilan kalender yang responsif.
@@ -16,7 +16,7 @@ Fitur Utama
 
 📦 Penyimpanan Lokal - Semua data disimpan secara lokal di perangkat menggunakan Hive untuk akses yang cepat dan offline.
 
-Tampilan Aplikasi
+## Tampilan Aplikasi
 Halaman Utama
 
 Halaman Tambah Tugas
@@ -29,7 +29,7 @@ Halaman Detail
 
 [Screenshot Halaman Detail Tugas]
 
-Teknologi yang Digunakan
+## Teknologi yang Digunakan
 Framework: Flutter - Framework UI modern dari Google untuk membangun aplikasi mobile, web, dan desktop dari satu basis kode.
 
 Bahasa: Dart - Bahasa pemrograman yang dioptimalkan untuk membangun antarmuka pengguna yang cepat di berbagai platform.
@@ -40,7 +40,7 @@ Manajemen State: provider - Pendekatan sederhana dan efisien untuk mengelola sta
 
 Notifikasi: flutter_local_notifications - Plugin untuk menampilkan notifikasi lokal yang dapat dijadwalkan, berfungsi sebagai pengingat tugas.
 
-UI & Paket Pendukung
+### UI & Paket Pendukung
 google_fonts - Memungkinkan akses mudah ke ribuan font dari Google Fonts untuk memperkaya tipografi aplikasi.
 
 intl - Digunakan untuk internasionalisasi dan lokalisasi, terutama untuk memformat tanggal dan waktu ke dalam format bahasa Indonesia.
@@ -51,7 +51,7 @@ image_picker - Plugin untuk mengambil gambar dari galeri atau kamera perangkat.
 
 timezone - Diperlukan oleh flutter_local_notifications untuk menangani penjadwalan notifikasi secara akurat berdasarkan zona waktu perangkat.
 
-Petunjuk Instalasi
+## Petunjuk Instalasi
 Untuk menjalankan proyek ini secara lokal, ikuti langkah-langkah berikut:
 
 Prasyarat
@@ -72,14 +72,14 @@ flutter pub run build_runner build --delete-conflicting-outputs
 
 Jalankan Aplikasi
 flutter run
-Struktur Proyek
+## Struktur Proyek
 lib
 ├── models # Berisi model data (todo.dart)
 ├── screens # Berisi semua file UI aplikasi
 ├── services # Berisi logika bisnis (hive, notifikasi, tema)
 └── main.dart # Titik masuk aplikasi dan konfigurasi global
 
-Tim Pengembang
+## Tim Pengembang
 Proyek ini dikembangkan secara kolaboratif oleh:
 
 Bagus Ibrahim - Frontend / UI/UX Lead
