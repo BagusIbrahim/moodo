@@ -1,3 +1,5 @@
+// android/app/build.gradle.kts
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -6,34 +8,35 @@ plugins {
 }
 
 android {
-    namespace = "com.example.moodo"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    namespace = "com.example.moodo" // Pastikan ini sesuai dengan namespace aplikasimu
+    // <<-- PERBAIKAN: compileSdk UBAH KE 35 -->>
+    compileSdk = 35 
 
+    // ndkVersion tetap 27.0.12077973
+    ndkVersion = "27.0.12077973" 
+
+    // compileOptions dan kotlinOptions tetap seperti ini
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.moodo"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
+        applicationId = "com.example.moodo" // Pastikan ini sama dengan application ID kamu
         minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        // <<-- PERBAIKAN: targetSdk UBAH KE 35 -->>
+        targetSdk = 35 
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
         }
     }
@@ -41,4 +44,9 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    // Dependensi Desugaring tetap ada
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }

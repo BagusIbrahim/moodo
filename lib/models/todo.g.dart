@@ -24,13 +24,16 @@ class TodoAdapter extends TypeAdapter<Todo> {
       category: fields[4] as String?,
       priority: fields[5] as String?,
       imagePath: fields[6] as String?,
+      notificationId: fields[7] as int?,
+      repeatFrequency: fields[8] as String?,
+      repeatEndDate: fields[9] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Todo obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.title)
       ..writeByte(1)
@@ -44,7 +47,13 @@ class TodoAdapter extends TypeAdapter<Todo> {
       ..writeByte(5)
       ..write(obj.priority)
       ..writeByte(6)
-      ..write(obj.imagePath);
+      ..write(obj.imagePath)
+      ..writeByte(7)
+      ..write(obj.notificationId)
+      ..writeByte(8)
+      ..write(obj.repeatFrequency)
+      ..writeByte(9)
+      ..write(obj.repeatEndDate);
   }
 
   @override

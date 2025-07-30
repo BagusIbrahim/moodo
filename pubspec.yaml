@@ -4,7 +4,7 @@ publish_to: 'none'
 version: 0.1.0
 
 environment:
-  sdk: ^3.8.1
+  sdk: '>=3.8.1 <4.0.0' # Memastikan kompatibilitas SDK
 
 dependencies:
   flutter:
@@ -19,10 +19,15 @@ dependencies:
   google_fonts: ^6.1.0
   image_picker: ^1.0.7 # Untuk memilih gambar dari galeri atau kamera
   path_provider: ^2.1.3 # Untuk mendapatkan direktori penyimpanan di perangkat
-  path: ^1.9.0  
-  pdf: ^3.10.8
-  printing: ^5.14.0
-  open_file: ^3.3.2
+  path: ^1.9.0
+  pdf: ^3.10.8 # Untuk fitur PDF
+  printing: ^5.14.0 # Untuk mencetak/share PDF
+  open_file: ^3.3.2 # Untuk membuka file PDF
+
+  # <<-- DEPENDENSI UNTUK NOTIFIKASI -->>
+  flutter_local_notifications: ^17.1.2 # Versi stabil yang sudah kita sepakati
+  timezone: ^0.9.3 # Penting untuk penjadwalan notifikasi zona waktu
+  # <<-- AKHIR DEPENDENSI NOTIFIKASI -->>
 
 dev_dependencies:
   flutter_test:
@@ -38,7 +43,6 @@ flutter:
     - assets/fonts/Nunito-Regular.ttf
     - assets/fonts/Nunito-Bold.ttf
 
-  # Font juga perlu dideklarasikan di bagian fonts
   fonts:
     - family: Nunito
       fonts:
