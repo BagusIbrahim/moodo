@@ -39,6 +39,9 @@ image_picker - Plugin untuk mengambil gambar dari galeri atau kamera perangkat.
 
 timezone - Diperlukan oleh flutter_local_notifications untuk menangani penjadwalan notifikasi secara akurat berdasarkan zona waktu perangkat.
 
+## Referensi Open Source
+https://github.com/AmirBayat0/Flutter-Hive-Todo-App?utm_source=chatgpt.com - Terinspirasi dari open source ini, dengan menambahkan dan memodifikasi fitur yang sudah ada.
+
 ## Petunjuk Instalasi
 Untuk menjalankan proyek ini secara lokal, ikuti langkah-langkah berikut:
 
