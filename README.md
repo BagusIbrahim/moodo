@@ -16,18 +16,6 @@ Aplikasi to-do list modern yang dirancang untuk membantu Anda mengelola tugas ha
 
 📦 Penyimpanan Lokal - Semua data disimpan secara lokal di perangkat menggunakan Hive untuk akses yang cepat dan offline.
 
-## Tampilan Aplikasi
-Halaman Utama
-
-Halaman Tambah Tugas
-
-Halaman Detail
-
-[Screenshot Halaman Utama]
-
-[Screenshot Halaman Tambah Tugas]
-
-[Screenshot Halaman Detail Tugas]
 
 ## Teknologi yang Digunakan
 Framework: Flutter - Framework UI modern dari Google untuk membangun aplikasi mobile, web, dan desktop dari satu basis kode.
